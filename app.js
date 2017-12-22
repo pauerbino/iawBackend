@@ -11,7 +11,11 @@ const cors = require('cors');
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect('mongodb://localhost:27017/marketingDB', {useMongoClient: true})
+//mongoose.connect('mongodb://localhost:27017/marketingDB', {useMongoClient: true})
+//  .then(() =>  console.log('connection successful'))
+//  .catch((err) => console.error(err));
+  
+mongoose.connect(process.env.MONGOLAB_URI || process.env.MONGODB_URI || 'mongodb://localhost/marketingDB', {useMongoClient: true})
   .then(() =>  console.log('connection successful'))
   .catch((err) => console.error(err));
 
@@ -22,6 +26,11 @@ var users = require('./routes/users');
 var register = require('./routes/register');
 var app = express();
 app.use(cors());
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.use(passport.initialize());
 // app.use(logger('dev'));
