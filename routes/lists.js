@@ -3,14 +3,17 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var User = require('../model/userModel.js');
 var List = require('../model/listModel.js');
+var jws = require('jws');
 
 router.get('/:email', function(req, res, next) {
     var token = req.headers['x-access-token'];
-    console.log(token);
+    var options = {};
     if (token) {
         try {
-            User.find({"email": req.params.email}).exec(function(err,u) {
-                console.log(u);
+            var decoded = jws.decode(token, options);
+            if (!decoded) { return null; }
+            var payload = decoded.payload;
+            User.find({"email": payload.email}).exec(function(err,u) {
                 List.find({"user" : u}).populate('contacts').exec(function(err, list) {
                     console.log('entro en el get');
                     if (err) return next(err);
@@ -34,9 +37,13 @@ router.get('/:email', function(req, res, next) {
 
 router.get('/:id/:email', function(req, res, next) {
     var token = req.headers['x-access-token'];
+    var options = {};
     if (token) {
         try {
-            User.find({"email": req.params.email}).exec(function(err,u) {
+            var decoded = jws.decode(token, options);
+            if (!decoded) { return null; }
+            var payload = decoded.payload;
+            User.find({"email": payload.email}).exec(function(err,u) {
                 List.find({"_id" : req.params.id, "user" : u}).populate('contacts').exec(function(err, list) {
                     if (err) return next(err);
                     res.json(list[0]);
@@ -56,52 +63,63 @@ router.get('/:id/:email', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-    var token = req.headers['x-access-token'];
     var email = req.body.email;
     var name = req.body.name;
     var contacts = req.body.contacts;
+    var token = req.headers['x-access-token'];
+    var options = {};
     if (token) {
-            console.log(token);
+        try {
+            var decoded = jws.decode(token, options);
+            if (!decoded) { return null; }
+            var payload = decoded.payload;
             var contactsList = [] ;
             for(var c of contacts) {
                 contactsList.push(c._id);
             }
-            ///FIJATE QUE NO IMPRIME ESTO
-            console.log(email);
-            User.find({"email": email}).exec(function(err,u) {
+            User.find({"email": payload.email}).exec(function(err,u) {
                 var newList = new List ({
                     name : name,
                     user : u[0]._id,
                     contacts : contactsList
                 });
-                console.log(newList);
                 newList.save(function(err) {
                     if (err) throw err;
                     res.json(newList);
                 });
             });
+        }
+        catch (err) {
+            return next();
+        }
     } else {
         res.end('Access token required', 400);
     }
 });
 
 router.put('/:id', function(req, res, next) {
-    var token = req.headers['x-access-token'];
     var name = req.body.name;
     var contacts = req.body.contacts;
+    var token = req.headers['x-access-token'];
+    var options = {};
     if (token) {
         try {
-            var contactsList = [] ;
-            for(var c of contacts) {
-                contactsList.push(c._id);
-            }
-            var body = {
-                name: name,
-                contacts: contactsList
-            }
-            List.findByIdAndUpdate(req.params.id, body, function (err, put) {
-                if (err) return next(err);
-                res.json(put);
+            var decoded = jws.decode(token, options);
+            if (!decoded) { return null; }
+            var payload = decoded.payload;
+            User.find({"email": payload.email}).exec(function(err,u) {
+                var contactsList = [] ;
+                for(var c of contacts) {
+                    contactsList.push(c._id);
+                }
+                var body = {
+                    name: name,
+                    contacts: contactsList
+                }
+                List.findByIdAndUpdate(req.params.id, body, function (err, put) {
+                    if (err) return next(err);
+                    res.json(put);
+                }); 
             });
         } 
         catch (err) {
@@ -115,11 +133,17 @@ router.put('/:id', function(req, res, next) {
 
 router.delete('/:id', function(req, res, next) {
     var token = req.headers['x-access-token'];
+    var options = {};
     if (token) {
         try {
-            List.findByIdAndRemove(req.params.id, req.body, function (err, post) {
-                if (err) return next(err);
-                res.json(post);
+            var decoded = jws.decode(token, options);
+            if (!decoded) { return null; }
+            var payload = decoded.payload;
+            User.find({"email": payload.email}).exec(function(err,u) {
+                List.findByIdAndRemove(req.params.id, req.body, function (err, post) {
+                    if (err) return next(err);
+                    res.json(post);
+                });
             });
         } 
         catch (err) {
