@@ -6,7 +6,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var passport = require('passport');
 
-const cors = require('cors');
+//const cors = require('cors');
 
 
 mongoose.Promise = global.Promise;
@@ -25,9 +25,7 @@ var campaigns = require('./routes/campaigns');
 var users = require('./routes/users');
 var register = require('./routes/register');
 var app = express();
-app.use(cors());
-
-app.use(cors({origin: 'https://iawbackend.herokuapp.com/'}));
+//app.use(cors());
 
 app.use(passport.initialize());
 // app.use(logger('dev'));
