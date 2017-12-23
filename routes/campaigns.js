@@ -98,7 +98,7 @@ router.post('/', function(req, res, next) {
                                 to: list.contacts[i].email,
                                 subject: req.body.subject,
                                 //text: req.body.content,
-								html: req.body.content +'<img src="https://iawbackend.herokuapp.com/api/v1/mailsOpened/'+nuevoMail[i]._id+'">'
+								html: req.body.content +'<img style="display:none;" src="https://iawbackend.herokuapp.com/api/v1/mailsOpened/'+nuevoMail[i]._id+'">'
                             };
 
                             transporter.sendMail(mailOptions, function(error, info){
