@@ -20,7 +20,6 @@ router.get('/:email', function(req, res, next) {
             User.find({"email": payload.email}).exec(function(err,u) {
                 Campaign.find({"user" : u}).populate('mails').exec(function (err, campaigns) {
                     if (err) return next(err);
-                    console.log(campaigns);
                     res.json(campaigns);
                 });
             });
@@ -44,7 +43,6 @@ router.get('/:id/:email', function(req, res, next) {
             User.find({"email": payload.email}).exec(function(err,u) {
                 Campaign.find({"_id" : req.params.id, "user" : u}).populate('mails').exec(function(err, campaign) {
                     if (err) return next(err);
-                    console.log(campaigns);
                     res.json(campaign);
                 });
             });
