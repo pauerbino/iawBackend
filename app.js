@@ -24,6 +24,7 @@ var contacts = require('./routes/contacts');
 var campaigns = require('./routes/campaigns');
 var users = require('./routes/users');
 var register = require('./routes/register');
+var mailsOpened = require('./routes/mailsOpened');
 var app = express();
 app.use(cors());
 app.use(function(req, res, next) {
@@ -43,6 +44,7 @@ app.use('/api/v1/contacts', contacts);
 app.use('/api/v1/campaigns', campaigns);
 app.use('/api/v1/users', users);
 app.use('/api/v1/register', register);
+app.use('/api/v1/mailsOpened', mailsOpened);
 
 require('./config/passport');
 

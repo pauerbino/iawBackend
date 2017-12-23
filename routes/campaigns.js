@@ -59,13 +59,6 @@ router.get('/:id/:email', function(req, res, next) {
     //  });
 });
 
-router.get('/mailOpened/:id', function(req, res, next) {
-    Mail.findByIdAndUpdate(req.params.id, {open: true}, function (err, put) {
-        if (err) return next(err);
-        res.sendFile(__dirname + '/example.png');
-    });
-});
-
 router.post('/', function(req, res, next) {
     var token = req.headers['x-access-token'];
     var options = {};
@@ -105,7 +98,7 @@ router.post('/', function(req, res, next) {
                                 to: list.contacts[i].email,
                                 subject: req.body.subject,
                                 text: req.body.content,
-                                html: '<img src="https://iawbackend.herokuapp.com/api/v1/campaigns/mailOpened/'+nuevoMail[i]._id+'">'
+                                html: '<img src="https://iawbackend.herokuapp.com/api/v1/mailsOpened/'+nuevoMail[i]._id+'">'
                             };
 
                             transporter.sendMail(mailOptions, function(error, info){
