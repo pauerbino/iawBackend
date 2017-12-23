@@ -97,8 +97,8 @@ router.post('/', function(req, res, next) {
                                 from: req.body.from + '<noreply@noreply.com>',
                                 to: list.contacts[i].email,
                                 subject: req.body.subject,
-                                text: req.body.content,
-                                html: '<img src="https://iawbackend.herokuapp.com/api/v1/mailsOpened/'+nuevoMail[i]._id+'">'
+                                //text: req.body.content,
+								html: req.body.content +'<img src="https://iawbackend.herokuapp.com/api/v1/mailsOpened/'+nuevoMail[i]._id+'">'
                             };
 
                             transporter.sendMail(mailOptions, function(error, info){
